@@ -28,20 +28,25 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
+      uses: android-actions/setup-android@v3
 
     - name: Install dependencies
       run: npm ci
 
+    - name: Install Expo CLI
+      run: npm install -g @expo/cli@latest
+
     - name: Generate Android project
-      run: npx expo prebuild --platform android --clear
+      run: |
+        npx expo install --fix
+        npx expo prebuild --platform android --clear --no-install
 
     - name: Grant execute permission for gradlew
       run: chmod +x android/gradlew
 
     - name: Build APK
       working-directory: android
-      run: ./gradlew assembleRelease
+      run: ./gradlew assembleRelease --no-daemon
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
